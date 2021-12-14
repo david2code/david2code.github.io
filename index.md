@@ -25,8 +25,8 @@ vi ~/.gitconfig
 设置不校验http/https
 ```c
 [user]
-    email = lss-1120@3onedata.com
-    name = Lu ShanShan
+    email = david2code@github.com
+    name = david
 [http]
     sslverify = false
 [https]
@@ -53,7 +53,7 @@ git remote rm origin
 ```
 #### 添加要合并的远程仓库连接
 ```c
-git remote add origin https://192.168.250.1/gitea/default/ls-gzxt-zhdg.git/
+git remote add origin https://192.168.250.1/gitea/default/david2code.git/
 ```
 #### 初始化本地仓库
 ```c
