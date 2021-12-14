@@ -34,7 +34,9 @@ vi ~/.gitconfig
 ```
 
 ### git忽略文件权限或者所有者改变
+```c
 git config --global core.fileMode false
+```
 或者设置 .git/config
 ```c
 core  filemode = false
@@ -42,18 +44,32 @@ core  filemode = false
 
 ### 远程新建了一个空仓库，如何将本地的代码仓库推送到远程仓库？
 #### 在本地仓库查看当前远程库链接
+```c
 git remote -v
+```
 #### 删除当前的远程库链接
+```c
 git remote rm origin
+```
 #### 添加要合并的远程仓库连接
+```c
 git remote add origin https://192.168.250.1/gitea/default/ls-gzxt-zhdg.git/
+```
 #### 初始化本地仓库
-git init 
+```c
+git init
+```
 #### 推送到远程
+```c
 git push origin master
+```
 #### 如果出现如下错误
+```c
 fatal: refusing to merge unrelated histories
+```
 #### 使用如下命令
+```c
 git pull origin master --allow-unrelated-histories
+```
 
 
