@@ -1,3 +1,9 @@
+# Linux
+
+[https://david2code.github.io/linux]
+
+# windows
+# git
 ## git使用过程中的各种错误
 
 git使用过程中出现的各种错误及相应解决办法汇总。
