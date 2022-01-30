@@ -153,4 +153,54 @@ systemctl restart php-fpm
 打开浏览器
 http://ip:port/
 
+# 修改shell命令行不显示绝对路径
+将.bashrc 中的w改成大写即可
+```shell
+if [ "$color_prompt" = yes ]; then
+    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\W\[\033[00m\]\$ '
+else
+    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\W\$ '
+fi
+```
+# fatal error: systemd/sd-bus.h: No such file or directory
+```shell
+apt install libsystemd-dev
+```
 
+# Linux主机之间免密登陆
+假设A想免密登陆B
+- 在A主机ssh-keygen生成id_rsa.pub
+- 在B的.ssh目录新建（如果没有)authorized_keys文件，将A的id_rsa.pub粘贴进去
+
+# postgresql
+- 安装
+```shell
+apt install postgresql
+```
+- 设置默认帐号postgres密码
+```shell
+su postgresql
+psql
+alter user postgres with password '123456'
+```
+- 创建数据库并查看和进入
+```shell
+create database my_db
+\l
+\c my_db
+\q
+```
+- 使用账号登陆
+```shell
+psql -U postgres -h 127.0.0.1 -p 5432 my_db
+```
+- 查询表格和自定义表格和表结构
+```shell
+select * from pg_tables;
+select * from pg_tables where schemaname = 'public';
+\d my_table
+```
+- 导出建表语句
+```shell
+pg_dump -h 127.0.0.1 -p 5432 -U postgres -d my_db -t pg_opclass -O -s > aa.sql
+```
