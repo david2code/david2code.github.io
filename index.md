@@ -80,3 +80,21 @@ fatal: refusing to merge unrelated histories
 git pull origin master --allow-unrelated-histories
 ```
 
+# git 撤回commit add
+## 撤回commit，不删除改动的代码
+```shell
+git reset --soft HEAD^
+```
+## 撤回commit，删除改动的代码
+```shell
+git reset --hard HEAD^
+```
+## 撤回add
+```shell
+git reset HEAD
+```
+## 撤回git rm
+```shell
+git reset
+git checkout
+```
