@@ -1,16 +1,66 @@
-# ubuntu sudo速度慢的解决办法
+# ubuntu
+## sudo速度慢的解决办法
 hostname得到计算机名称
 在/etc/hosts中添加一行
 ```shell
 127.0.0.1   计算机名   计算机名.localdomain
 ```
+## ubuntu usb不识别
+- 现象
+  lsusb
+  lsblk
+  无新设备出现
+- 解决
+  虚拟机关机，在设置中添加usb空的筛选器
+  
 # 系统时区不正确的解决办法
 ```shell
 timedatectl set-timezone "Asia/Shanghai"
 ```
+# firewall-cmd
+## 启停
+```shell
+systemctl status firewall-cmd
+systemctl start firewall-cmd
+systemctl stop firewall-cmd
+systemctl restart firewall-cmd
+```
+## 查看当前配置
+```shell
+firewall-cmd --zone=wan --list-all
+```
+## 放行端口
+### 命令行
+```shell
+firewall-cmd --permanent --zone=wan --add-port=3306/tcp
+```
+###  直接修改配置文件
+```shell
+vi /etc/firewalld/zones/wan.xml
+<port protocol="tcp" port="3306"/>
+firewall-cmd --reload
+```
 # samba
 ## Linux主机修改了用户密码，windows不提示密码错误，无法登陆。
 - 控制面板-用户账户-管理你的凭据-windows凭据-编辑samba的账户密码
+# mysql
+## Failed to find valid data directory
+- 一般是因为存放数据的目录被毁坏或者不存在：比如安装mysql时，磁盘已满，结果数据目录创建不成功
+- 打开 /etc/my.conf，找到datadir
+- 清空 datadir 目录下的所有内容
+- 执行 /usr/bin/mysqld_safe --initialize 将会生成带随机密码的root账户
+- root 密码，可以在datadir目录下的d.err文件中找到
+- 登陆后要先修改默认密码
+```shell
+alter user user() identified by "XXXXXX";
+```
+# windows子系统ubuntu安装软件出错
+> Could not read response to hello message from hook [ ! -f /usr/bin/snap ] ||
+- 解决办法
+```shell
+sudo rm -rf /etc/apt/apt.conf.d/20snapd.conf
+```
+
 # 配置rsyslog日志服务器
 ## 配置server
 - apt install rsyslog rsyslog-relp
