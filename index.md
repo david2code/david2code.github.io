@@ -98,3 +98,12 @@ git reset HEAD
 git reset
 git checkout
 ```
+## 删除分支
+- 删除本地分支
+```shell
+git branch -d branch_name
+```
+- 删除运程分支
+```shell
+git push origin -d branch_name
+```
