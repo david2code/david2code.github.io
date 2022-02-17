@@ -107,3 +107,7 @@ git branch -d branch_name
 ```shell
 git push origin -d branch_name
 ```
+## git 显示分支历史
+```shell
+git log --graph --all
+```
