@@ -114,4 +114,5 @@ git log --graph --all
 ## git获取commit-id
 ```shell
 git rev-parse HEAD
+git rev-parse --short HEAD
 ```
