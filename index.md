@@ -111,3 +111,7 @@ git push origin -d branch_name
 ```shell
 git log --graph --all
 ```
+## git获取commit-id
+```shell
+git rev-parse HEAD
+```
