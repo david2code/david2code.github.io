@@ -208,3 +208,11 @@ pg_dump -h 127.0.0.1 -p 5432 -U postgres -d my_db -t pg_opclass -O -s > aa.sql
 ```shell
 cp -rap dir1 dir2
 ```
+
+# git 与 xargs 与 cp 命令搭配使用
+```shell
+git diff --name-only commit-id  |xargs -t -i cp {} ../tmp/
+```
+git diff --name-only 是将当前版本与后面指定版本进行比较，显示差异的文件名
+xargs -t  表示将后面要执行的命令一行一行打印出来 可选
+      -i 表示将xargs的每项名称，一行一行的赋给{}
