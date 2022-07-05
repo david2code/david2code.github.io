@@ -103,6 +103,12 @@ git push origin branch --force
 git reset
 git checkout
 ```
+## git放弃当前所有未add的修改
+git reset --hard
+## git 删除当前不在版本控制的文件，如编译中间文件等
+git clean -f
+其中-f表示不删除 .gitignore中指定的文件
+
 ## 删除分支
 - 删除本地分支
 ```shell
