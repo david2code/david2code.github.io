@@ -212,6 +212,13 @@ pg_dump -h localhost -p 5432 -U postgres -d my_db -t table* -O > aa.sql
 ```shell
 psql -h localhost -p 5432 -U postgres my_db < aa.sql
 ```
+- 查看当前所有角色
+select rolname from pg_roles;
+- 查看当前所有帐号
+select * from pg_user;
+- 修改用户密码
+alter user postgres password '123456';
+
 # linux合并两个文件夹
 ```shell
 cp -rap dir1 dir2
