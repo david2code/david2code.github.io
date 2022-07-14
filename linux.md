@@ -204,6 +204,14 @@ select * from pg_tables where schemaname = 'public';
 ```shell
 pg_dump -h 127.0.0.1 -p 5432 -U postgres -d my_db -t pg_opclass -O -s > aa.sql
 ```
+- 备份数据表
+```shell
+pg_dump -h localhost -p 5432 -U postgres -d my_db -t table* -O > aa.sql
+```
+- 恢复数据
+```shell
+psql -h localhost -p 5432 -U postgres my_db < aa.sql
+```
 # linux合并两个文件夹
 ```shell
 cp -rap dir1 dir2
