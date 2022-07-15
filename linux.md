@@ -179,7 +179,7 @@ apt install postgresql
 ```
 - 设置默认帐号postgres密码
 ```shell
-su postgresql
+sudo su postgres
 psql
 alter user postgres with password '123456'
 ```
