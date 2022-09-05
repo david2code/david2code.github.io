@@ -127,3 +127,8 @@ git log --graph --all
 git rev-parse HEAD
 git rev-parse --short HEAD
 ```
+
+## git status 中文乱码
+```shell
+git config --global core.quotepath false
+```
