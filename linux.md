@@ -237,3 +237,125 @@ git diff --name-only commit-id  |xargs -t -i cp {} ../tmp/
 git diff --name-only 是将当前版本与后面指定版本进行比较，显示差异的文件名
 xargs -t  表示将后面要执行的命令一行一行打印出来 可选
       -i 表示将xargs的每项名称，一行一行的赋给{}
+
+# qemu模拟ARM系统
+https://zhuanlan.zhihu.com/p/340362172
+## 安装
+sudo apt install qemu qemu-utils
+
+## 编译内核镜像
+### 下载内核源码
+### 配置
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- vexpress_defconfig
+### 内核裁剪
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- menuconfig
+### 编译
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- -j8
+### 得到zImage
+arch/arm/boot/zImage
+arch/arm/boot/dts/vexpress-v2p-ca9.dtb
+
+## 编译u-boot
+## 下载u-boot源码
+git clone git://git.denx.de/u-boot.git
+## 编译
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- vexpress_ca9x4_defconfig
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- menuconfig
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- -j8
+## 仿真
+qemu-system-arm -M vexpress-a9 -m 256 -kernel u-boot -nographic
+
+## busybox
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- defconfig
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- menuconfig
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- -j8
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- install
+
+## 制作rootfs
+- mkdir -p rootfs/{dev,etc/init.d,lib}
+- cp busybox-1.35.0/_install/* rootfs/ -r
+- cp -a busybox-1.35.0/examples/bootfloppy/etc/* rootfs/etc/
+- sudo cp -P /usr/arm-linux-gnueabihf/lib/* rootfs/lib/
+- qemu-img create -f raw disk.img 512M
+- mkfs -t ext4 ./disk.img
+- 将rootfs中的所有文件复制到disk.img
+```shell
+mkdir tmpfs
+sudo mount -o loop ./disk.img tmpfs/
+sudo cp -r rootfs/* tmpfs/
+sudo umount tmpfs
+```
+
+## 启动虚拟机
+qemu-system-arm \
+        -M vexpress-a9 \
+        -m 512M \
+        -kernel linux-5.19.3/arch/arm/boot/zImage \
+        -dtb linux-5.19.3/arch/arm/boot/dts/vexpress-v2p-ca9.dtb  \
+        -nographic \
+        -append "root=/dev/mmcblk0 rw console=ttyAMA0" \
+        -sd disk.img
+
+## 关闭虚拟机
+killall qemu-system-arm
+
+## can't open /dev/tty2: No such file or directory
+sudo mknod dev/null c 1 3
+sudo ln -s null tty4
+sudo ln -s null tty3
+sudo ln -s null tty2
+
+## 编写应用程序在qemu系统中运行
+mkdir app
+vi app/main.c
+```c
+#include<stdio.h>
+#include<unistd.h>
+
+int main()
+{
+        while(1) {
+                printf("run in qemu!\n");
+                sleep(1);
+        }
+}
+```
+arm-linux-gnueabihf-gcc -o main main.c
+qemu-arm -L /usr/arm-linux-gnueabihf/ main
+
+sudo mount -o loop disk.img tmpfs/
+sudo cp app/main tmpfs/root/
+sudo umout tmpfs
+重新运行虚拟机
+
+## 建立虚拟机与宿主机的网络通信  未实现
+- sudo apt-get install uml-utilities
+- sudo tunctl -u root -t tap30
+- ifconfig tap30 192.168.111.1 promisc up
+- 启动
+  qemu-system-arm \
+        -M vexpress-a9 \
+        -m 512M \
+        -kernel linux-5.19.3/arch/arm/boot/zImage \
+        -dtb linux-5.19.3/arch/arm/boot/dts/vexpress-v2p-ca9.dtb  \
+        -nographic \
+        -append "root=/dev/mmcblk0 rw console=ttyAMA0" \
+        -sd disk.img \
+        -net nic \
+        -net tap,ifname=tap30,script=no,downscript=no
+
+## uboot 通过tftp加载zImage
+- vi include/configs/vexpress_common.h
+```shell
+#define CONFIG_IPADDR 192.168.13.112
+#define CONFIG_NETMASK 255.255.255.0
+#define CONFIG_SERVERIP 192.168.13.1
+#define CONFIG_BOOTFILE "uImage"
+#define CONFIG_BOOTCOMMAND "tftp 0x60003000 uImage;setenv bootargs'root=/dev/mmcblk0 console=ttyAMA0';bootm 0x60003000"
+```
+- 编译u-boot
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- -j8
+- 编译kernel
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- LOADADDR=0x60003000 -j4
+- 启动u-boot
+qemu-system-arm -M vexpress-a9 -m 256 -kernel u-boot -nographic -net nic,macaddr=00:25:33:00:00:01 -net tap
