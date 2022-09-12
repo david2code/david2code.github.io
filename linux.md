@@ -224,7 +224,59 @@ select * from pg_user;
 ```shell
 alter user postgres password '123456';
 ```
+- postgresql 查看正在执行的命令
+SELECT
+  procpid,
+  start,
+  now() - start AS lap,
+  current_query
+FROM
+  (SELECT
+    backendid,
+    pg_stat_get_backend_pid(S.backendid) AS procpid,
+    pg_stat_get_backend_activity_start(S.backendid) AS start,
+    pg_stat_get_backend_activity(S.backendid) AS current_query
+  FROM
+    (SELECT pg_stat_get_backend_idset() AS backendid) AS S
+  ) AS S
+WHERE
+  current_query <> '<IDLE>'
+ORDER BY
+  lap DESC;
 
+- kill 进程
+
+SELECT pg_cancel_backend(进程id);
+
+
+- 查处空闲进程
+SELECT
+ pid,
+ datname AS db,
+ query_start AS start,
+ now() - query_start AS lap,
+ query
+FROM pg_stat_activity
+WHERE state <> 'idle' and query not like '%pg_stat_activity%'
+ and (now() - query_start) > interval '10 seconds';
+
+- 复制表结构，但不复制索引和约束
+create table test_bak (like test);
+## 表结构复制，包换索引和约束
+create table test_bak (like test including all);
+## 表结构和数据复制
+create table test_bak as (select * from test where column_name = something);
+
+- 重命名表
+alter table test rename to test_bak;
+
+- vacuumdb
+- 有一个表数据非常多，结果查询时非常慢。于是就把数据几乎都删除了，只剩下几百条。结果查询还是很慢。检查发现，虽然数据删除了，但表所占用的存储没有变化。原来postsql并不会立即清理存储，需要使用如下命令清理，清理后查询速度就很快了
+vaccumdb -U postgres -h localhost -p 5432 -d database_name -t table_name
+
+- 使用truncate清空表，可以立即回收存储空间，可以不使用vacuumdb
+truncate table table_name;
+ 
 # linux合并两个文件夹
 ```shell
 cp -rap dir1 dir2
