@@ -411,3 +411,17 @@ make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- -j8
 make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- LOADADDR=0x60003000 -j4
 - 启动u-boot
 qemu-system-arm -M vexpress-a9 -m 256 -kernel u-boot -nographic -net nic,macaddr=00:25:33:00:00:01 -net tap
+  
+# vscode
+## vscode设置indent
+- 勾选  editor insert spaces
+- editor tab size  设置为4
+- 取消勾选  editor detect indentation
+- c_cpp formatting 设置为vcFormat
+## vscode 远程连接免密
+- 在当前windows cmd 下输入 ssh-keygen 生成 id_rsa.pub
+- 将 id_rsa.pub内容粘贴到要远程的主机的.ssh/authorized_keys
+
+## 解决在远程主机占用磁盘过大 [~/.cache/vscode-cpptools]
+- 打开一个远程项目
+- 在设置中选择远程[ip]，搜索“C_Cpp: Intelli Sense Cache Size”，将5120改为512
