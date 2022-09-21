@@ -132,3 +132,13 @@ git rev-parse --short HEAD
 ```shell
 git config --global core.quotepath false
 ```
+## 对git的历史提交生成patch
+```shell
+git format-patch -2 git-ver1 git-ver2
+```
+## 应用patch
+```shell
+git apply --check 0001.patch
+git apply 0001.patch
+```
+
