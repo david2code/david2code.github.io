@@ -225,6 +225,7 @@ select * from pg_user;
 alter user postgres password '123456';
 ```
 - postgresql 查看正在执行的命令
+```sql
 SELECT
   procpid,
   start,
@@ -243,6 +244,7 @@ WHERE
   current_query <> '<IDLE>'
 ORDER BY
   lap DESC;
+```
 
 - kill 进程
 
